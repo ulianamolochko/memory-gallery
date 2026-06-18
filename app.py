@@ -9,9 +9,9 @@ app = Flask(__name__)
 
 # Настройки связи с твоим облаком Cloudinary
 cloudinary.config(
-  cloud_name = "ТВОЙ_CLOUD_NAME",
-  api_key = "ТВОЙ_API_KEY",
-  api_secret = "ТВОЙ_API_SECRET",
+  cloud_name = "dkk8iqf6p",
+  api_key = "946533445816386",
+  api_secret = "utBQxo1xonoZiY1E9zI_I6e-Bvk",
   secure = True
 )
 
