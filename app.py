@@ -4,7 +4,6 @@ from flask import Flask, render_template_string, jsonify
 
 app = Flask(__name__)
 
-# Чистый, монолитный код ALEA. Только стейтмент, кнопка и концепт ожидания.
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -14,14 +13,13 @@ HTML_TEMPLATE = """
     <title>ALEA</title>
     <style>
         body { background-color: #030303; color: #a3a3a3; font-family: monospace; padding: 60px 20px; text-align: center; }
-        .statement-box { max-width: 550px; margin: 0 auto 80px auto; text-align: left; border-left: 1px solid #333; padding-left: 25px; }
+        .statement-box { max-width: 600px; margin: 0 auto 80px auto; text-align: left; border-left: 1px solid #333; padding-left: 25px; }
         h1 { font-size: 32px; font-weight: normal; letter-spacing: 12px; color: #fff; margin-bottom: 25px; }
-        .statement { font-size: 13px; color: #555; text-transform: lowercase; letter-spacing: 1px; line-height: 1.8; }
-        .statement p { margin: 0 0 10px 0; }
+        .statement { font-size: 13px; color: #666; letter-spacing: 1px; line-height: 1.8; text-align: left; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
         .photo-card { background: #080808; padding: 40px 20px; border: 1px dashed #222; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .date { font-size: 9px; color: #333; margin-top: 15px; }
-        button { background: none; border: 1px solid #222; color: #444; font-family: monospace; padding: 8px 15px; margin-top: 20px; cursor: pointer; font-size: 11px; }
+        button { background: none; border: 1px solid #222; color: #444; font-family: monospace; padding: 8px 15px; margin-top: 30px; cursor: pointer; font-size: 11px; }
         button:hover { color: #888; border-color: #444; }
     </style>
 </head>
@@ -29,7 +27,7 @@ HTML_TEMPLATE = """
     <div class="statement-box">
         <h1>ALEA</h1>
         <div class="statement" id="manifesto">
-            <!-- Строки вставятся через JavaScript при загрузке -->
+            <!-- Высказывание вставится через JavaScript -->
         </div>
         <button onclick="generateStatement()">// re-examine reality</button>
     </div>
@@ -50,41 +48,22 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // Оригинальные, монументальные тексты философов
-        const blockA = [
-            "we exist in a state of continuous, fragmented presence.",
-            "the interface separates us from the world it promises to show.",
-            "wandering through the cold, silent geometry of the digital stream.",
-            "our attention is scattered across a thousand flickering screens.",
-            "caught in the endless orbit of images that conceal our loneliness."
-        ];
-        const blockB = [
-            "the lens captures a fleeting micro-moment of our fragile reality.",
-            "a mechanical gaze registers a space where no one planned to be seen.",
-            "the apparatus catches the raw, uncurated optical accident of life.",
-            "holding a pixelated reflection of the present directly in volatile memory.",
-            "the automated shutter blinks, creating an intimate trace out of nothing."
-        ];
-        const blockC = [
-            "gaze at what the indifference of time has left behind.",
-            "an archive that instantly forgets itself, leaving only a ghost of an entry.",
-            "there is a quiet, poetic melancholy in things that cannot be saved.",
-            "stop trying to organize the chaos. embrace the beautiful glitch of being.",
-            "you will close this tab, but this random collision of meanings remains."
+        // Сформированные, целостные кураторские высказывания на основе оригинальной философии
+        const statementsPool = [
+            "we exist inside the obscene transparency of the digital object, where the interface systematically separates us from the world it promises to show. substitution of signs of the real for the real creates an endless orbit of images designed to mask the terrifying absence of historical meaning.",
+            "visibility functions as an uninterrupted asymmetrical distribution of violence. he who is subjected to a field of visibility assumes internal responsibility for the constraints of modern confinement, while the numerical language of decentralized control marks access through continuous modulations.",
+            "the unguided lens shatters the bourgeois illusion of premeditated human intent, introducing us to an industrialization of vision where the machine sees without perceiving. this framing power captures the world, turning the sacred mystery of being into an objectified, transparent inventory.",
+            "to record the raw, mechanical accident of existence is the only remaining refusal of total ideological complicity. the stumble of the automated shutter is a radical rejection of premeditated harmony, an absolute embrace of the arbitrary fragment within a volatile system.",
+            "the absurd is born of this direct confrontation between the human need for order and the unreasonable silence of a world flowing with monstrous energy. creating an archive that instantly forgets itself becomes the ultimate destruction of systemic tyranny and historicist enclosure."
         ];
 
         function generateStatement() {
-            const line1 = blockA[Math.floor(Math.random() * blockA.length)];
-            const line2 = blockB[Math.floor(Math.random() * blockB.length)];
-            const line3 = blockC[Math.floor(Math.random() * blockC.length)];
-            
-            document.getElementById('manifesto').innerHTML = 
-                '<p>// ' + line1 + '</p>' +
-                '<p>// ' + line2 + '</p>' +
-                '<p>// ' + line3 + '</p>';
+            // Выбираем одно монолитное высказывание
+            const randomStatement = statementsPool[Math.floor(Math.random() * statementsPool.length)];
+            document.getElementById('manifesto').innerHTML = '// ' + randomStatement;
         }
 
-        // Автоматический старт первой генерации текста
+        // Автоматический старт первого высказывания при загрузке
         generateStatement();
     </script>
 </body>
@@ -97,7 +76,6 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    # Эта пустая дверь полностью готова и ждет будущую железку
     return jsonify({"status": "ready_for_hardware"}), 200
 
 if __name__ == '__main__':
