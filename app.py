@@ -7,7 +7,8 @@ import cloudinary.api
 
 app = Flask(__name__)
 
-# ТВОИ КЛЮЧИ CLOUDINARY (Не забудь вставить свои реальные данные вместо слов в кавычках!)
+# ТВОИ КЛЮЧИ CLOUDINARY
+# Обязательно замени эти три строчки в кавычках на свои реальные ключи!
 cloudinary.config(
   cloud_name = "dkk8iqf6p",
   api_key = "946533445816386",
@@ -76,6 +77,7 @@ HTML_TEMPLATE = """
         <div class="photo-card" style="{% if image.url == 'placeholder' %}display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 250px; background: #080808; border: 1px dashed #222; font-family: monospace; color: #444; font-size: 11px; letter-spacing: 1px;{% endif %}">
             {% if image.url == 'placeholder' %}
                 <div style="color: #666; margin-bottom: 20px;">{{ image.text }}</div>
+            # Здесь в будущем будет вывод живых фото от камеры
             {% else %}
                 <img src="{{ image.url }}" alt="alea snapshot">
             {% endif %}
@@ -99,7 +101,7 @@ def index():
                 'created_at': res['created_at'].replace('T', ' ').replace('Z', '')
             })
         
-        # Если в облаке пока пусто, показываем наши концептуальные рамки ожидания
+        # Если в облаке пока пусто, плавно выводим наши рамки ожидания
         if not images:
             images = [
                 {'url': 'placeholder', 'text': '[CAMERA_DISCONNECTED]', 'created_at': 'SYSTEM_OFFLINE'},
@@ -124,6 +126,7 @@ def upload():
         return jsonify({"error": "No file"}), 400
     file = request.files['file']
     try:
+        # Вот эта строчка принимает файлы и открывает связь!
         upload_result = cloudinary.uploader.upload(file, folder="installation")
         return jsonify({"status": "success", "url": upload_result['secure_url']}), 200
     except Exception as e:
