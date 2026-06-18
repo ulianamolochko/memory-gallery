@@ -1,20 +1,8 @@
 import os
 import random
 from flask import Flask, request, render_template_string, jsonify
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 app = Flask(__name__)
-
-# ТВОИ КЛЮЧИ ДОСТУПА CLOUDINARY
-# Аккуратно сотри текст внутри кавычек и вставь свои реальные данные из панели Cloudinary:
-cloudinary.config(
-  cloud_name = "dkk8iqf6p",
-  api_key = "946533445816386",
-  api_secret = "utBQxo1xonoZiY1E9zI_I6e-Bvk",
-  secure = True
-)
 
 SECRET_TOKEN = "my_art_installation_secret_2026"
 
@@ -57,10 +45,8 @@ HTML_TEMPLATE = """
         .statement { font-size: 13px; color: #555; text-transform: lowercase; letter-spacing: 1px; line-height: 1.8; }
         .statement p { margin: 0 0 10px 0; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
-        .photo-card { background: #000; padding: 10px; border: 1px solid #111; }
-        img { width: 100%; height: auto; filter: grayscale(100%) contrast(120%); transition: 0.5s ease; }
-        img:hover { filter: grayscale(0%) contrast(100%); }
-        .date { font-size: 9px; color: #222; margin-top: 10px; text-align: right; }
+        .photo-card { background: #080808; padding: 40px 20px; border: 1px dashed #222; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .date { font-size: 9px; color: #333; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -72,18 +58,20 @@ HTML_TEMPLATE = """
             <p>// {{ line_3 }}</p>
         </div>
     </div>
+    
     <div class="gallery">
-        {% for image in images %}
-        <div class="photo-card" style="{% if image.url == 'placeholder' %}display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 250px; background: #080808; border: 1px dashed #222; font-family: monospace; color: #444; font-size: 11px; letter-spacing: 1px;{% endif %}">
-            {% if image.url == 'placeholder' %}
-                <div style="color: #666; margin-bottom: 20px;">{{ image.text }}</div>
-            # Здесь в будущем будет вывод живых фото от камеры
-            {% else %}
-                <img src="{{ image.url }}" alt="alea snapshot">
-            {% endif %}
-            <div class="date" style="{% if image.url == 'placeholder' %}text-align: center; color: #222; margin-top: 0;{% endif %}">{{ image.created_at }}</div>
+        <div class="photo-card">
+            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[CAMERA_DISCONNECTED]</div>
+            <div class="date">SYSTEM_OFFLINE</div>
         </div>
-        {% endfor %}
+        <div class="photo-card">
+            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[WAITING_FOR_THE_ACCIDENT]</div>
+            <div class="date">PROBABILITY_CYCLE</div>
+        </div>
+        <div class="photo-card">
+            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[MEMORY_NOT_FOUND]</div>
+            <div class="date">RAM_EMPTY</div>
+        </div>
     </div>
 </body>
 </html>
@@ -91,45 +79,16 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
-    try:
-        resources = cloudinary.api.resources(type="upload", prefix="installation", max_results=100)
-        images = []
-        sorted_resources = sorted(resources.get('resources', []), key=lambda x: x['created_at'], reverse=True)
-        for res in sorted_resources:
-            images.append({
-                'url': res['secure_url'],
-                'created_at': res['created_at'].replace('T', ' ').replace('Z', '')
-            })
-        
-        # Если в облаке пока пусто, плавно выводим наши рамки ожидания
-        if not images:
-            images = [
-                {'url': 'placeholder', 'text': '[CAMERA_DISCONNECTED]', 'created_at': 'SYSTEM_OFFLINE'},
-                {'url': 'placeholder', 'text': '[WAITING_FOR_THE_ACCIDENT]', 'created_at': 'PROBABILITY_CYCLE'},
-                {'url': 'placeholder', 'text': '[MEMORY_NOT_FOUND]', 'created_at': 'RAM_EMPTY'}
-            ]
-        
-        line_1 = random.choice(THE_BLOCK_A)
-        line_2 = random.choice(THE_BLOCK_B)
-        line_3 = random.choice(THE_BLOCK_C)
-
-        return render_template_string(HTML_TEMPLATE, images=images, line_1=line_1, line_2=line_2, line_3=line_3)
-    except Exception as e:
-        return f"Error: {str(e)}", 500
+    # Робот на сервере сам выбирает случайные строки при каждом обновлении
+    line_1 = random.choice(THE_BLOCK_A)
+    line_2 = random.choice(THE_BLOCK_B)
+    line_3 = random.choice(THE_BLOCK_C)
+    return render_template_string(HTML_TEMPLATE, line_1=line_1, line_2=line_2, line_3=line_3)
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    token = request.headers.get('Authorization')
-    if token != f"Bearer {SECRET_TOKEN}":
-        return jsonify({"error": "Unauthorized"}), 401
-    if 'file' not in request.files:
-        return jsonify({"error": "No file"}), 400
-    file = request.files['file']
-    try:
-        upload_result = cloudinary.uploader.upload(file, folder="installation")
-        return jsonify({"status": "success", "url": upload_result['secure_url']}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # Дверь для будущей камеры с Сабуртало полностью готова и ждет её
+    return jsonify({"status": "ready_for_hardware"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
