@@ -7,8 +7,8 @@ import cloudinary.api
 
 app = Flask(__name__)
 
-# ТВОИ КЛЮЧИ CLOUDINARY
-# Обязательно замени эти три строчки в кавычках на свои реальные ключи!
+# ТВОИ КЛЮЧИ ДОСТУПА CLOUDINARY
+# Аккуратно сотри текст внутри кавычек и вставь свои реальные данные из панели Cloudinary:
 cloudinary.config(
   cloud_name = "dkk8iqf6p",
   api_key = "946533445816386",
@@ -126,7 +126,6 @@ def upload():
         return jsonify({"error": "No file"}), 400
     file = request.files['file']
     try:
-        # Вот эта строчка принимает файлы и открывает связь!
         upload_result = cloudinary.uploader.upload(file, folder="installation")
         return jsonify({"status": "success", "url": upload_result['secure_url']}), 200
     except Exception as e:
