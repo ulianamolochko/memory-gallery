@@ -72,13 +72,19 @@ HTML_TEMPLATE = """
         </div>
     </div>
     <div class="gallery">
+            <div class="gallery">
         {% for image in images %}
-        <div class="photo-card">
-            <img src="{{ image.url }}" alt="alea snapshot">
-            <div class="date">{{ image.created_at }}</div>
+        <div class="photo-card" style="{% if image.url == 'placeholder' %}display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 250px; background: #080808; border: 1px dashed #222; font-family: monospace; color: #444; font-size: 11px; letter-spacing: 1px;{% endif %}">
+            {% if image.url == 'placeholder' %}
+                <div style="color: #666; margin-bottom: 20px;">{{ image.text }}</div>
+            {% else %}
+                <img src="{{ image.url }}" alt="alea snapshot">
+            {% endif %}
+            <div class="date" style="{% if image.url == 'placeholder' %}text-align: center; color: #222; margin-top: 0;{% endif %}">{{ image.created_at }}</div>
         </div>
         {% endfor %}
     </div>
+
 </body>
 </html>
 """
@@ -95,7 +101,14 @@ def index():
                 'created_at': res['created_at'].replace('T', ' ').replace('Z', '')
             })
         
-        # Строим логичное, но случайное стихотворение современности
+        # Концепт ожидания, если камера еще не прислала живые кадры
+        if not images:
+            images = [
+                {'url': 'placeholder', 'text': '[CAMERA_DISCONNECTED]', 'created_at': 'SYSTEM_OFFLINE'},
+                {'url': 'placeholder', 'text': '[WAITING_FOR_THE_ACCIDENT]', 'created_at': 'PROBABILITY_CYCLE'},
+                {'url': 'placeholder', 'text': '[MEMORY_NOT_FOUND]', 'created_at': 'RAM_EMPTY'}
+            ]
+        
         line_1 = random.choice(THE_BLOCK_A)
         line_2 = random.choice(THE_BLOCK_B)
         line_3 = random.choice(THE_BLOCK_C)
@@ -103,6 +116,7 @@ def index():
         return render_template_string(HTML_TEMPLATE, images=images, line_1=line_1, line_2=line_2, line_3=line_3)
     except Exception as e:
         return f"Error: {str(e)}", 500
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
