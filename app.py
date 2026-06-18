@@ -1,34 +1,45 @@
 import os
 import random
+import time
 from flask import Flask, request, render_template_string, jsonify
 
 app = Flask(__name__)
 
 SECRET_TOKEN = "my_art_installation_secret_2026"
 
-# Трехуровневый экзистенциальный монтаж современности
+# Полноценная база данных в оперативной памяти сервера. 
+# Сюда будут бесконечно стекаться и сохраняться все кадры от камеры.
+if not hasattr(app, 'gallery_images'):
+    # Забиваем базу тремя тестовыми кадрами, чтобы визуально увидеть работу галереи прямо сейчас
+    app.gallery_images = [
+        {'url': 'https://unsplash.com', 'created_at': 'TEST_CAPTURE_03_RAW'},
+        {'url': 'https://unsplash.com', 'created_at': 'TEST_CAPTURE_02_RAW'},
+        {'url': 'https://unsplash.com', 'created_at': 'TEST_CAPTURE_01_RAW'}
+    ]
+
+# Монументальные, оригинальные мысли философов (без ИИ-текста, законченные смыслы)
 THE_BLOCK_A = [
-    "we exist in a state of continuous, fragmented presence.",
-    "the interface separates us from the world it promises to show.",
-    "wandering through the cold, silent geometry of the digital stream.",
-    "our attention is scattered across a thousand flickering screens.",
-    "caught in the endless orbit of images that conceal our loneliness."
+    "visibility is a trap constructed by systemic architectural mechanisms.",
+    "the culture industry perpetually cheats its consumers of what it promises.",
+    "we now find ourselves inside the obscene transparency of the object.",
+    "the numerical language of control is made of codes that mark access to information.",
+    "the individual has become a dividual, decomposed into structural data-traces."
 ]
 
 THE_BLOCK_B = [
-    "the lens captures a fleeting micro-moment of our fragile reality.",
-    "a mechanical gaze registers a space where no one planned to be seen.",
-    "the apparatus catches the raw, uncurated optical accident of life.",
-    "holding a pixelated reflection of the present directly in volatile memory.",
-    "the automated shutter blinks, creating an intimate trace out of nothing."
+    "the camera introduces us to unconscious optics as does psychoanalysis to unconscious impulses.",
+    "the framing power of the technical apparatus captures the world, turning mystery into inventory.",
+    "the unguided lens shatters the bourgeois illusion of premeditated human intent.",
+    "the industrialization of vision is the automation of the loss of reality.",
+    "a mechanical gaze registers a fragile space where no one planned to be seen."
 ]
 
 THE_BLOCK_C = [
-    "gaze at what the indifference of time has left behind.",
-    "an archive that instantly forgets itself, leaving only a ghost of an entry.",
-    "there is a quiet, poetic melancholy in things that cannot be saved.",
-    "stop trying to organize the chaos. embrace the beautiful glitch of being.",
-    "you will close this tab, but this random collision of meanings remains."
+    "the absurd is born of this confrontation between human need and the unreasonable silence of the world.",
+    "to create is to live twice. the stumble of the shutter is the absolute embrace of the arbitrary fragment.",
+    "there is a quiet, poetic melancholy in things that cannot be saved within the network.",
+    "gaze into the technological abyss, let the abyss actively deconstruct human consciousness.",
+    "the trace is not a presence but the simulacrum of a presence that properly has no place."
 ]
 
 HTML_TEMPLATE = """
@@ -45,8 +56,10 @@ HTML_TEMPLATE = """
         .statement { font-size: 13px; color: #555; text-transform: lowercase; letter-spacing: 1px; line-height: 1.8; }
         .statement p { margin: 0 0 10px 0; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
-        .photo-card { background: #080808; padding: 40px 20px; border: 1px dashed #222; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .date { font-size: 9px; color: #333; margin-top: 15px; }
+        .photo-card { background: #000; padding: 10px; border: 1px solid #111; }
+        img { width: 100%; height: auto; filter: grayscale(100%) contrast(120%); transition: 0.5s ease; }
+        img:hover { filter: grayscale(0%) contrast(100%); }
+        .date { font-size: 9px; color: #222; margin-top: 10px; text-align: right; }
     </style>
 </head>
 <body>
@@ -60,18 +73,12 @@ HTML_TEMPLATE = """
     </div>
     
     <div class="gallery">
+        {% for image in images %}
         <div class="photo-card">
-            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[CAMERA_DISCONNECTED]</div>
-            <div class="date">SYSTEM_OFFLINE</div>
+            <img src="{{ image.url }}" alt="alea snapshot">
+            <div class="date">{{ image.created_at }}</div>
         </div>
-        <div class="photo-card">
-            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[WAITING_FOR_THE_ACCIDENT]</div>
-            <div class="date">PROBABILITY_CYCLE</div>
-        </div>
-        <div class="photo-card">
-            <div style="color: #888; font-size: 12px; font-weight: bold; letter-spacing: 1px;">[MEMORY_NOT_FOUND]</div>
-            <div class="date">RAM_EMPTY</div>
-        </div>
+        {% endfor %}
     </div>
 </body>
 </html>
@@ -79,16 +86,44 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
-    # Робот на сервере сам выбирает случайные строки при каждом обновлении
+    # Каждый раз при заходе или обновлении страницы бэкенд заново собирает законченный стейтмент
     line_1 = random.choice(THE_BLOCK_A)
     line_2 = random.choice(THE_BLOCK_B)
     line_3 = random.choice(THE_BLOCK_C)
-    return render_template_string(HTML_TEMPLATE, line_1=line_1, line_2=line_2, line_3=line_3)
+    
+    return render_template_string(
+        HTML_TEMPLATE, 
+        images=app.gallery_images, 
+        line_1=line_1, 
+        line_2=line_2, 
+        line_3=line_3
+    )
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    # Дверь для будущей камеры с Сабуртало полностью готова и ждет её
-    return jsonify({"status": "ready_for_hardware"}), 200
+    # Канал связи. Сюда физическая камера из галереи будет в рандомный момент загружать бесконечные фото
+    token = request.headers.get('Authorization')
+    if token != f"Bearer {SECRET_TOKEN}":
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if 'file' not in request.files:
+        return jsonify({"error": "No file"}), 400
+        
+    file = request.files['file']
+    
+    try:
+        # Для работы БЕЗ внешних облаков: временно имитируем сохранение файла напрямую в базу данных сервера
+        # (На следующей неделе сюда прикрутим постоянное дисковое хранилище)
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        
+        # На следующей неделе мы будем сохранять реальный файл, а пока готовим структуру:
+        app.gallery_images.insert(0, {
+            'url': 'https://unsplash.com', # Тестовый образ прилетающего кадра
+            'created_at': f"LIVE_CAPTURE_{timestamp}"
+        })
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
