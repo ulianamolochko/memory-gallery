@@ -7,11 +7,11 @@ import cloudinary.api
 
 app = Flask(__name__)
 
-# Настройки связи с твоим облаком Cloudinary
+# ТВОИ КЛЮЧИ CLOUDINARY (Не забудь вставить свои реальные данные вместо слов в кавычках!)
 cloudinary.config(
-  cloud_name = "dkk8iqf6p",
-  api_key = "946533445816386",
-  api_secret = "utBQxo1xonoZiY1E9zI_I6e-Bvk",
+  cloud_name = "ТВОЙ_CLOUD_NAME",
+  api_key = "ТВОЙ_API_KEY",
+  api_secret = "ТВОЙ_API_SECRET",
   secure = True
 )
 
@@ -72,7 +72,6 @@ HTML_TEMPLATE = """
         </div>
     </div>
     <div class="gallery">
-            <div class="gallery">
         {% for image in images %}
         <div class="photo-card" style="{% if image.url == 'placeholder' %}display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 250px; background: #080808; border: 1px dashed #222; font-family: monospace; color: #444; font-size: 11px; letter-spacing: 1px;{% endif %}">
             {% if image.url == 'placeholder' %}
@@ -84,7 +83,6 @@ HTML_TEMPLATE = """
         </div>
         {% endfor %}
     </div>
-
 </body>
 </html>
 """
@@ -101,7 +99,7 @@ def index():
                 'created_at': res['created_at'].replace('T', ' ').replace('Z', '')
             })
         
-        # Концепт ожидания, если камера еще не прислала живые кадры
+        # Если в облаке пока пусто, показываем наши концептуальные рамки ожидания
         if not images:
             images = [
                 {'url': 'placeholder', 'text': '[CAMERA_DISCONNECTED]', 'created_at': 'SYSTEM_OFFLINE'},
@@ -116,7 +114,6 @@ def index():
         return render_template_string(HTML_TEMPLATE, images=images, line_1=line_1, line_2=line_2, line_3=line_3)
     except Exception as e:
         return f"Error: {str(e)}", 500
-
 
 @app.route('/upload', methods=['POST'])
 def upload():
